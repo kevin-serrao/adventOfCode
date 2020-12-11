@@ -19,10 +19,6 @@ public class Day10 {
         dp[1] = 2;
         dp[2] = 4;
         dp[3] = 7;
-        dp[4] = 7;
-        dp[5] = 7;
-        dp[6] = 14;
-        dp[7] = 28;
 
         // 1,2,3; 1,3; 2,3; 3, 
         for (int i = 4; i < numbers.size(); i++) {
