@@ -11,7 +11,6 @@ public class Day10 {
             numbersArray[i] = Integer.parseInt(fileContents[i]);
         }
         Arrays.sort(numbersArray);
-        int maxJoltage = numbersArray[numbersArray.length - 1] + 3;
         List<Integer> numbers = Arrays.asList(numbersArray);
         System.out.println(numbers);
         long[] dp = new long[numbers.size()];
