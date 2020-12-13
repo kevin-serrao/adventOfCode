@@ -9,7 +9,7 @@ public class Day12 {
         for (int i = 0; i < fileContents.length; i ++) {
             Instruction instruction = new Instruction(fileContents[i]);
             System.out.println(ship.x);
-            System.out.println(ship.y);
+            System.out.println(ship.y); 
             ship.processInstruction(instruction);
         }
         System.out.println(ship.x);
