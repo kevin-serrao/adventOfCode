@@ -18,12 +18,6 @@ public class Day16 {
         rules.printRules();
         int errorRate = 0;
 
-        Ticket myTicket = Ticket.fromString(fileContents[MY_TICKET_INDEX]);
-        // List<Integer> meh = myTicket.getInvalidValues(rules);
-        // for (int invalidValue: meh) {
-        //     errorRate += invalidValue;
-        // }
-
         for (int i = OTHER_TICKETS_STARTING_INDEX; i < fileContents.length; i++) {
             Ticket ticket = Ticket.fromString(fileContents[i]);
             List<Integer> invalidValues = ticket.getInvalidValues(rules);
