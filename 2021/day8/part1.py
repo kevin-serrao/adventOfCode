@@ -1,4 +1,3 @@
-from collections import defaultdict
 
 def parseInput():
     with open('input.txt') as f:
