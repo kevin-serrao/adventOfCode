@@ -11,7 +11,7 @@ def getCorruptedCharacter(line):
     stack = []
     for c in line:
         if c in ['(','{','[', '<']:
-            stack.push(c)
+            stack.append(c)
         else:
             l = stack.pop()
             if c == ')':

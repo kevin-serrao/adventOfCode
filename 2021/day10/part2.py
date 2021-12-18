@@ -1,5 +1,3 @@
-from functools import reduce
-from collections import defaultdict
 
 def parseInput():
     with open('input.txt') as f:
@@ -7,36 +5,70 @@ def parseInput():
         f.close()
         return lines
 
-def isLowPoint(grid, x, y):
-    for [i,j] in [[0,1], [1,0], [-1,0], [0,-1]]:
-        if x + i > -1 and x + i < len(grid) and y + j > -1 and y + j < len(grid[x+i]):
-            if grid[x][y] >= grid[x+i][y+j]:
-                return False
-    return True
+# scoreForCorruptedCharacter = {')': 3, ']': 57, '}': 1197, '>': 25137, '*': 0}
 
-def getLowPoint(grid, x, y):
-    if isLowPoint(grid, x, y):
-        return (x,y)
-    for [i,j] in [[0,1], [1,0], [-1,0], [0,-1]]:
-        if x + i > -1 and x + i < len(grid) and y + j > -1 and y + j < len(grid[x+i]) and grid[x + i][y + j] < grid[x][y]:
-            # print(str((x, y)) + " flows into " + str((x+i, y+j)))
-            return getLowPoint(grid, x + i, y + j)
+# def getCorruptedCharacter(line):
+#     stack = []
+#     for c in line:
+#         if c in ['(','{','[', '<']:
+#             stack.append(c)
+#         else:
+#             l = stack.pop()
+#             if c == ')':
+#                 if l != '(':
+#                     return c
+#             elif c == ']':
+#                 if l != '[':
+#                     return c
+#             elif c == '}':
+#                 if l != '{':
+#                     return c
+#             elif c == '>':
+#                 if l != '<':
+#                     return c
+#     return '*'
 
+scoreForCompletedCharacter = {'(': 1, '[': 2, '{': 3, '<': 4}
+
+def getScoreFromStack(stack):
+    score = 0
+    x = stack.pop()
+    while len(stack) > 0 and x in scoreForCompletedCharacter.keys():
+        score *= 5
+        score += scoreForCompletedCharacter[x]
+        x = stack.pop()
+    if len(stack) == 0:
+        return score * 5 + scoreForCompletedCharacter[x]
+    return score 
+
+def getScoreForLine(line):
+    stack = []
+    for c in line:
+        if c in ['(','{','[', '<']:
+            stack.append(c)
+        else:
+            l = stack.pop()
+            if c == ')':
+                if l != '(':
+                    return 0
+            elif c == ']':
+                if l != '[':
+                    return 0
+            elif c == '}':
+                if l != '{':
+                    return 0
+            elif c == '>':
+                if l != '<':
+                    return 0
+    return getScoreFromStack(stack)
 
 def main():
     lines = parseInput()
-    grid = [[int(c) for c in line] for line in lines]
-    basinSizeByLowPointCoord = defaultdict(lambda: 0)
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
-            if (grid[i][j] != 9):
-                lowPointForThisPoint = getLowPoint(grid,i,j)
-                # print(str((i, j)) + " flows into " + str((lowPointForThisPoint[0], lowPointForThisPoint[1])))
-                basinSizeByLowPointCoord[lowPointForThisPoint] += 1
-    topThree = [0,0,0]
-    for v in basinSizeByLowPointCoord.values():
-        topThree[topThree.index(min(topThree))] = max(v, min(topThree))
-    print(basinSizeByLowPointCoord)
-    print(reduce(lambda x,y: x*y, topThree))
+    scores = []
+    for line in lines:
+        scoreForLine =getScoreForLine(line)
+        if scoreForLine > 0:
+            scores.append(scoreForLine) 
+    print(sorted(scores)[len(scores) // 2])
 
 main()
