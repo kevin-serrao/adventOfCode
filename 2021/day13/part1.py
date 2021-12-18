@@ -21,13 +21,13 @@ def main():
     print(first_instruction)
     for (x,y) in grid.keys():
         if first_instruction[0] == 'y':
-            if x > int(first_instruction[1]):
-                grid[(x,y)] = 0
-                grid[(2 * int(first_instruction[1]) - x,y)] = 1
-        else:
             if y > int(first_instruction[1]):
                 grid[(x,y)] = 0
                 grid[(x, 2 * int(first_instruction[1]) - y)] = 1
+        else:
+            if x > int(first_instruction[1]):
+                grid[(x,y)] = 0
+                grid[(2 * int(first_instruction[1]) - x,y)] = 1
     s = 0
     for (x,y) in grid.keys():
         s += grid[(x,y)]
