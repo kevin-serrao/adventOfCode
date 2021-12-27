@@ -1,42 +1,72 @@
 
-
 def parseInput():
     with open('input.txt') as f:
         lines = [line.strip() for line in f.readlines()]
         f.close()
         return lines
 
+def combine(values, type):
+    if type == 0:
+        return sum(values)
+    elif type == 1:
+        prod = 1
+        for val in values:
+            prod *= val
+        return prod
+    elif type == 2:
+        return min(values)
+    elif type == 3:
+        return max(values)
+    elif type == 5:
+        return values[0] > values[1]
+    elif type == 6:
+        return values[0] < values[1]
+    elif type == 7:
+        return values[0] == values[1]
+
+def getValue(b, p):
+    if b[p:] == '0' * len(b[p:]):
+        return (0, float('inf'))
+    type = int(b[p+3:p+6], 2)
+    value = 0
+    if type == 4:
+        newP = p + 6
+        while b[newP] == '1':
+            value *= (2**4)
+            print(int(b[newP + 1:newP + 5], 2))
+            value += int(b[newP + 1:newP + 5], 2)
+            newP += 5
+        value *= (2**4)
+        value += int(b[newP + 1:newP + 5], 2)
+        newP += 5
+        return (value, newP)
+    lengthTypeId = int(b[p+6], 2)
+    if lengthTypeId == 0:
+        subPacketLength = int(b[p+7:p+22], 2)
+        newP = p + 22
+        values = []
+        while newP < p + 22 + subPacketLength:
+            (newValue, newP) = getValue(b, newP)
+            values.append(newValue)
+        finalValue = combine(values, type)
+        return (finalValue, newP)
+    else:
+        numberOfSubPackets = int(b[p+7:p+18], 2)
+        values = []
+        newP = p + 18
+        for _ in range(numberOfSubPackets):
+            (newValue, newP) = getValue(b, newP)
+            values.append(newValue)
+        finalValue = combine(values, type)
+        return (finalValue, newP)
+    
 
 def main():
     lines = parseInput()
-    grid = [[int(x) for x in line] for line in lines]
-    new_grid = [[0 for _ in range(len(grid[0]) * 5)] for _ in range(len(grid) * 5)]
-    for i in range(len(grid) * 5):
-        for j in range(len(grid[0]) * 5):
-            newVal = grid[i % len(grid)][j % len(grid[0])] + i // len(grid) + j // len(grid[0])
-            if newVal > 9:
-                newVal = newVal % 9
-            new_grid[i][j] = newVal
-    grid = new_grid
+    hex = lines[0]
+    b = bin(int(hex, 16))[2:].zfill(len(hex) * 4)
+    print(getValue(b, 0)[0])
 
 
-    min_risks = [[float('inf') for _ in line] for line in grid]
-    visited = set([(0,0)])
-    min_risks[0][0] = 0
-    min_risks[0][1] = grid[0][1]
-    min_risks[1][0] = grid[1][0]
-    to_visit = [(0,1), (1,0)]
-    to_visit = sorted(to_visit, key=lambda coord: -min_risks[coord[0]][coord[1]])
-    while len(to_visit) > 0:
-        next = to_visit.pop()
-        visited.add(tuple(next))
-        (x,y) = next
-        for [i,j] in [[0,1], [1,0], [-1,0], [0,-1]]:
-            if x+i > -1 and x+i < len(grid) and y+j > -1 and y+j < len(grid[x+i]) and (x+i,y+j) not in visited:
-                min_risks[x+i][y+j] = min(min_risks[x+i][y+j], min_risks[x][y] + grid[x+i][y+j])
-                if (x+i,y+j) not in to_visit:
-                    to_visit.append((x+i,y+j))
-        to_visit = sorted(to_visit, key=lambda coord: -min_risks[coord[0]][coord[1]])
-    print(min_risks[len(grid) - 1][len(grid[0]) - 1])
     
 main()
